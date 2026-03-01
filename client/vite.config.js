@@ -7,6 +7,7 @@ export default defineConfig({
     proxy: {
       "/feedback": "http://localhost:8000",
       "/stats": "http://localhost:8000",
+      "/users": "http://localhost:8000",
     },
   },
 });

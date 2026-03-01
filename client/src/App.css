@@ -1,0 +1,30 @@
+.app-nav {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.widget-wrapper {
+  width: 100%;
+  display: flex;
+}
+
+.widget-wrapper--left   { justify-content: flex-start; }
+.widget-wrapper--center { justify-content: center; }
+.widget-wrapper--right  { justify-content: flex-end; }
+
+.nav-link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nav-link:hover {
+  background: var(--accent);
+  color: #fff;
+}

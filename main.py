@@ -1,6 +1,7 @@
 import importlib.util
 import json
 import os
+import sys
 import uvicorn
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
@@ -140,6 +141,8 @@ def run_tests():
 
 
 if __name__ == "__main__":
-    run_tests()
-    print("\n Starting server...")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    if "--test" in sys.argv:
+        run_tests()
+    else:
+        print("\n Starting server...")
+        uvicorn.run(app, host="0.0.0.0", port=8000)
