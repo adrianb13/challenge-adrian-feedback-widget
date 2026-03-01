@@ -1,0 +1,146 @@
+.widget {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  width: 100%;
+  max-width: 480px;
+}
+
+.widget-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 1.5rem;
+}
+
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.alert-success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.alert-error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.widget-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.rating-label {
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.field input,
+.field textarea {
+  padding: 0.6rem 0.85rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #111827;
+  transition: border-color 0.2s;
+  resize: none;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.field input.input-error,
+.field textarea.input-error {
+  border-color: #ef4444;
+}
+
+.field input.input-error:focus,
+.field textarea.input-error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.field-error {
+  font-size: 0.78rem;
+  color: #ef4444;
+}
+
+.stars-error {
+  outline: 2px solid #ef4444;
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.stars {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.star {
+  background: none;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.2rem 0.3rem;
+  line-height: 1;
+  transition: transform 0.15s, border-color 0.15s;
+  opacity: 0.5;
+}
+
+.star:hover {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+.star.selected {
+  border-color: #6366f1;
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.submit-btn {
+  padding: 0.7rem 1.25rem;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #4f46e5;
+}
+
+.submit-btn:disabled {
+  background: #a5b4fc;
+  cursor: not-allowed;
+}
