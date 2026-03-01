@@ -1,0 +1,258 @@
+PROMPTS HISTORY - challenge-adrian-feedback-widget
+===================================================
+Session recorded: 2026-03-01
+===================================================
+
+USER: using python with fastapi create api that has a 'get' and 'post' endpoint
+
+ASSISTANT: Created main.py with FastAPI app containing:
+- POST /feedback — accepts name, message, rating; stores in-memory list; returns 201
+- GET /feedback — returns all feedback entries
+
+---
+
+USER: add a 'post' to track total submissions, tracks average sentiment
+
+ASSISTANT: Added POST /stats endpoint that returns:
+- total_submissions count
+- average_sentiment (float, average of all ratings)
+- sentiment_label ("positive", "neutral", "negative")
+
+---
+
+USER: add code to all 'post' to store entries to a json file
+
+ASSISTANT: Added load_data() and save_data() functions. Both POST endpoints now persist
+to data.json after each submission.
+
+---
+
+USER: add code to 'get' where it retrieves the 3 most recent 'feedback' entries stored on the json file
+
+ASSISTANT: Updated GET /feedback to read from data.json and return the 3 most recent
+entries sorted newest first.
+
+---
+
+USER: rename main.py to feedback-api.py then create a main.py file to run and access the api
+
+ASSISTANT: Renamed main.py to feedback-api.py. Created new main.py as entry point using
+importlib.util to dynamically load feedback-api.py (required because of hyphen in filename).
+
+---
+
+USER: create 'api' folder and move 'feedback-api.py' into update references to the file as needed
+
+ASSISTANT: Created api/ folder, moved feedback-api.py into it, updated main.py reference
+from "feedback-api.py" to "api/feedback-api.py".
+
+---
+
+USER: test api endpoint functionality
+
+ASSISTANT: Added run_tests() function to main.py using FastAPI TestClient. Ran tests —
+fixed syntax error (if avg = 5.0: → if avg == 5.0:) and Unicode encoding issue on Windows
+terminal. All tests passed.
+
+---
+
+USER: inside the 'client' folder create a react app widget for users to submit 'feedback' that will be posted using 'feedback-api.py'
+
+ASSISTANT: Created Vite React app in client/ folder. Added CORS middleware to feedback-api.py
+for localhost:5173. Downgraded Vite 5 → Vite 4 for Node 16 compatibility. Created:
+- client/src/FeedbackWidget.jsx — form with name, message, star rating fields
+- client/src/App.jsx — mounts FeedbackWidget
+- client/src/FeedbackWidget.css — widget styling
+- client/src/index.css — global CSS variables / theming
+
+---
+
+USER: for the rating symbols instead of using star symbols you use emojis representing the rating
+
+ASSISTANT: Replaced star symbols with sentiment emojis:
+- 1 = 😡, 2 = 😞, 3 = 😐, 4 = 😊, 5 = 🤩
+Updated selected state styling to use border highlight instead of background fill.
+
+---
+
+USER: just below the widget, create a second module that displays the last 3 'feedback' returned by the 'get' function from 'feedback-api.py'
+
+ASSISTANT: Created RecentFeedback.jsx and RecentFeedback.css. Fetches GET /feedback on mount,
+displays last 3 entries below the widget. Updated App.jsx to render it.
+
+---
+
+USER: when a new 'feedback' entry is submitted, updated the feedback module with the new submission as part of the recent 3 shown
+
+ASSISTANT: Switched from refreshTrigger pattern to optimistic updates. POST /feedback response
+returns the new entry; App.jsx passes it as latestEntry prop to RecentFeedback, which prepends
+it to the list and slices to 3 — no re-fetch needed.
+
+---
+
+USER: realign 'recentfeedback' module to display below feedback widget, let it expand the full width of the display
+
+ASSISTANT: Updated layout so RecentFeedback sits below the widget at full width. Adjusted
+App.jsx layout and CSS accordingly.
+
+---
+
+USER: show cards as a column with the most recent feedback at the top then descending down in age of feedback
+
+ASSISTANT: Changed RecentFeedback card layout from row to column. Most recent entry at top,
+oldest at bottom.
+
+---
+
+USER: add input validation for feedback widget, do not allow submission until all fields are entered
+
+ASSISTANT: Added client-side validation to FeedbackWidget.jsx:
+- errors and touched state objects
+- validate(field, value) function returning error strings
+- onBlur handlers mark fields as touched and trigger validation
+- Submit button disabled until all fields pass validation
+- Inline error messages displayed below each field
+- noValidate on form element
+
+---
+
+USER: in 'feedback-api.py' add input validation as needed and error handling for all endpoints
+
+ASSISTANT: Added Pydantic @field_validator for all fields:
+- name: max 100 characters
+- message: max 1000 characters
+- rating: integer 1–5
+Added custom 422 exception handler in main.py for consistent error response format.
+Added try/except with rollback on save failure in POST /feedback.
+
+---
+
+USER: inside the feedback widget, create a settings button that opens a settings module, will detail settings once module and button are created
+
+ASSISTANT: Created SettingsPanel.jsx and SettingsPanel.css — overlay modal triggered by ⚙️
+button in widget header.
+
+---
+
+USER: correction, please remove settings button and related module
+
+ASSISTANT: Removed SettingsPanel.jsx, SettingsPanel.css, the settings button, and all related
+imports/state from FeedbackWidget.jsx.
+
+---
+
+USER: in 'feedback-api.py' create separate endpoints, one for create a user, one for verifying a user, user only needs username and email
+
+ASSISTANT: Added User model with Pydantic validators (username 3–50 chars, email regex).
+Added POST /users (create, returns 201, checks duplicates) and POST /users/verify endpoints
+to feedback-api.py.
+
+---
+
+USER: correction, move user endpoints into a new file called 'user-api.py' inside 'api' folder and update all references
+
+ASSISTANT: Created api/user-api.py with APIRouter(prefix="/users"). Moved user endpoints and
+User model there. Converted feedback-api.py to also use APIRouter. Updated main.py to load
+both modules via importlib and include both routers. User data persists to users.json
+separately from data.json.
+
+---
+
+USER: run functionality test for whole application
+
+ASSISTANT: Ran python main.py --test. All 44 tests passed across:
+- POST /feedback (4 entries)
+- GET /feedback (3 most recent, correct order)
+- POST /stats (total, average, label)
+- data.json persistence
+- POST /users (create, duplicate checks, validation)
+- POST /users/verify (valid, wrong email, unknown user)
+- users.json persistence
+
+---
+
+USER: in react ui, create a link for a 'sign in' page, then create a separate sign page
+
+ASSISTANT: Added react-router-dom. Wrapped app in BrowserRouter in main.jsx. Added Routes
+in App.jsx with / and /signin paths. Created SignInPage.jsx and SignInPage.css. Added "Sign In"
+nav link on home page.
+
+---
+
+USER: once user is signed in, direct to a new page called 'widget configurator'
+
+ASSISTANT: Added /widget-configurator route in App.jsx. Created WidgetConfigurator.jsx and
+WidgetConfigurator.css. After successful sign-in, navigate to /widget-configurator passing
+user data via router state.
+
+---
+
+USER: verify info provided in 'sign in' page against users saved in 'users.json' using user verify endpoint. if user info matches record in users.json allow sign in and redirect to widget configurator
+
+ASSISTANT: Updated SignInPage.jsx to POST to /users/verify. On 200 response navigates to
+/widget-configurator with { state: { user: data.user } }. On 404 shows error message.
+WidgetConfigurator.jsx reads user from useLocation().state and displays username.
+
+---
+
+USER: tried signing in with valid user info, returned 'No account found with those details.'
+
+ASSISTANT: Diagnosed two root causes:
+1. /users missing from vite.config.js proxy — Vite returned its own 404 HTML, React code
+   misread it as API 404. Fixed by adding "/users": "http://localhost:8000" to proxy.
+2. run_tests() was deleting users.json every time python main.py ran, wiping real users.
+   Fixed by gating tests behind --test CLI flag: python main.py --test runs tests,
+   python main.py just starts the server.
+
+---
+
+USER: in 'widget configurator' allow user to change positions for both feedback widget and feedback dashboard
+
+ASSISTANT: Added position controls to WidgetConfigurator.jsx:
+- Feedback Widget: horizontal alignment buttons (Left / Center / Right)
+- Feedback Dashboard: position relative to widget buttons (Above widget / Below widget)
+Config saved to localStorage as widgetConfig. App.jsx reads config and applies
+widget-wrapper--{align} CSS class and render order for dashboard above/below.
+Added live preview section showing widget/dashboard relative positioning.
+
+---
+
+USER: in widget configuration, allow user to change text and background colors as well as submission button color
+
+ASSISTANT: Added Widget Colors section with three color pickers:
+- Background color (widgetBg)
+- Text color (widgetText)
+- Submission button color (widgetBtnColor)
+Applied as CSS variable overrides on the widget wrapper div in App.jsx. Preview updated
+to reflect colors. Colors persist to localStorage.
+
+---
+
+USER: allow the same color functionality to dashboard background and text
+
+ASSISTANT: Added Dashboard Colors section with two color pickers:
+- Background color (dashboardBg)
+- Text color (dashboardText)
+Applied as CSS variable overrides on the dashboard wrapper div in App.jsx. Preview updated.
+Colors persist to localStorage.
+
+---
+
+USER: create a button called 'reset to default' to change all configuration to default settings
+
+ASSISTANT: Added reset() function to WidgetConfigurator.jsx that restores DEFAULT_CONFIG to
+both state and localStorage. Added "Reset To Default" button in the configurator footer
+alongside the "Back To Feedback With Changes" link.
+
+---
+
+USER: make 'back to feedback with changes' button equal size as 'reset to default', wrap text if needed
+
+ASSISTANT: Updated WidgetConfigurator.css:
+- configurator-footer: align-items: stretch
+- back-link and reset-btn: flex: 1, white-space: normal, word-break: break-word, line-height: 1.3
+Both buttons now share equal width and wrap text as needed.
+
+===================================================
+END OF SESSION
+===================================================

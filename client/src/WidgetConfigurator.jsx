@@ -2,15 +2,34 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./WidgetConfigurator.css";
 
-const DEFAULT_CONFIG = { widgetAlign: "center", dashboardPosition: "below" };
+const DEFAULT_CONFIG = {
+  widgetAlign:       "center",
+  dashboardPosition: "below",
+  widgetBg:          "#ffffff",
+  widgetText:        "#1a1a2e",
+  widgetBtnColor:    "#6366f1",
+  dashboardBg:       "#ffffff",
+  dashboardText:     "#1a1a2e",
+};
 
 function loadConfig() {
   try {
-    return JSON.parse(localStorage.getItem("widgetConfig")) || DEFAULT_CONFIG;
+    return { ...DEFAULT_CONFIG, ...JSON.parse(localStorage.getItem("widgetConfig")) };
   } catch {
     return DEFAULT_CONFIG;
   }
 }
+
+const WIDGET_COLOR_FIELDS = [
+  { key: "widgetBg",       label: "Background color" },
+  { key: "widgetText",     label: "Text color" },
+  { key: "widgetBtnColor", label: "Submission button color" },
+];
+
+const DASHBOARD_COLOR_FIELDS = [
+  { key: "dashboardBg",   label: "Background color" },
+  { key: "dashboardText", label: "Text color" },
+];
 
 export default function WidgetConfigurator({ dark, onToggleDark }) {
   const { state } = useLocation();
@@ -21,6 +40,11 @@ export default function WidgetConfigurator({ dark, onToggleDark }) {
     const next = { ...config, [key]: value };
     setConfig(next);
     localStorage.setItem("widgetConfig", JSON.stringify(next));
+  }
+
+  function reset() {
+    setConfig(DEFAULT_CONFIG);
+    localStorage.setItem("widgetConfig", JSON.stringify(DEFAULT_CONFIG));
   }
 
   return (
@@ -73,19 +97,82 @@ export default function WidgetConfigurator({ dark, onToggleDark }) {
             </div>
           </section>
 
+          {/* ── Widget Colors ─────────────────────────────────────── */}
+          <section className="config-section">
+            <h3 className="config-section-title">Widget Colors</h3>
+            <div className="color-grid">
+              {WIDGET_COLOR_FIELDS.map(({ key, label }) => (
+                <div key={key} className="color-row">
+                  <label className="color-label" htmlFor={key}>{label}</label>
+                  <div className="color-input-wrap">
+                    <input
+                      id={key}
+                      type="color"
+                      value={config[key]}
+                      onChange={(e) => update(key, e.target.value)}
+                      className="color-input"
+                    />
+                    <span className="color-hex">{config[key]}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* ── Dashboard Colors ──────────────────────────────────── */}
+          <section className="config-section">
+            <h3 className="config-section-title">Dashboard Colors</h3>
+            <div className="color-grid">
+              {DASHBOARD_COLOR_FIELDS.map(({ key, label }) => (
+                <div key={key} className="color-row">
+                  <label className="color-label" htmlFor={key}>{label}</label>
+                  <div className="color-input-wrap">
+                    <input
+                      id={key}
+                      type="color"
+                      value={config[key]}
+                      onChange={(e) => update(key, e.target.value)}
+                      className="color-input"
+                    />
+                    <span className="color-hex">{config[key]}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* ── Live preview ─────────────────────────────────────── */}
           <section className="config-section">
             <h3 className="config-section-title">Preview</h3>
             <div className="preview-canvas">
               <div className={`preview-layout preview-layout--${config.dashboardPosition}`}>
                 {config.dashboardPosition === "above" && (
-                  <div className="preview-block preview-dashboard">Dashboard</div>
+                  <div
+                    className="preview-block preview-dashboard"
+                    style={{ background: config.dashboardBg, color: config.dashboardText, border: `1px solid ${config.dashboardText}22` }}
+                  >
+                    Dashboard
+                  </div>
                 )}
-                <div className={`preview-block preview-widget preview-widget--${config.widgetAlign}`}>
-                  Widget
+                <div
+                  className={`preview-block preview-widget preview-widget--${config.widgetAlign}`}
+                  style={{ background: config.widgetBg, color: config.widgetText, border: `1px solid ${config.widgetText}22` }}
+                >
+                  <span>Widget</span>
+                  <span
+                    className="preview-btn"
+                    style={{ background: config.widgetBtnColor }}
+                  >
+                    Submit
+                  </span>
                 </div>
                 {config.dashboardPosition === "below" && (
-                  <div className="preview-block preview-dashboard">Dashboard</div>
+                  <div
+                    className="preview-block preview-dashboard"
+                    style={{ background: config.dashboardBg, color: config.dashboardText, border: `1px solid ${config.dashboardText}22` }}
+                  >
+                    Dashboard
+                  </div>
                 )}
               </div>
             </div>
@@ -93,9 +180,10 @@ export default function WidgetConfigurator({ dark, onToggleDark }) {
 
         </div>
 
-        <p className="configurator-back">
-          <Link to="/" className="back-link">Back to Feedback</Link>
-        </p>
+        <div className="configurator-footer">
+          <Link to="/" className="back-link">Back To Feedback With Changes</Link>
+          <button className="reset-btn" onClick={reset}>Reset To Default</button>
+        </div>
       </div>
     </div>
   );

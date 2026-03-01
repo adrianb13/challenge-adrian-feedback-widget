@@ -6,11 +6,19 @@ import SignInPage from "./SignInPage";
 import WidgetConfigurator from "./WidgetConfigurator";
 import "./App.css";
 
-const DEFAULT_CONFIG = { widgetAlign: "center", dashboardPosition: "below" };
+const DEFAULT_CONFIG = {
+  widgetAlign:       "center",
+  dashboardPosition: "below",
+  widgetBg:          "#ffffff",
+  widgetText:        "#1a1a2e",
+  widgetBtnColor:    "#6366f1",
+  dashboardBg:       "#ffffff",
+  dashboardText:     "#1a1a2e",
+};
 
 function loadConfig() {
   try {
-    return JSON.parse(localStorage.getItem("widgetConfig")) || DEFAULT_CONFIG;
+    return { ...DEFAULT_CONFIG, ...JSON.parse(localStorage.getItem("widgetConfig")) };
   } catch {
     return DEFAULT_CONFIG;
   }
@@ -31,9 +39,30 @@ export default function App() {
     setConfig(loadConfig());
   }
 
-  const dashboard = <RecentFeedback latestEntry={latestEntry} />;
+  const dashboard = (
+    <div
+      style={{
+        "--bg-card":        config.dashboardBg,
+        "--text-primary":   config.dashboardText,
+        "--text-secondary": config.dashboardText,
+        width: "100%",
+      }}
+    >
+      <RecentFeedback latestEntry={latestEntry} />
+    </div>
+  );
   const widget = (
-    <div className={`widget-wrapper widget-wrapper--${config.widgetAlign}`}>
+    <div
+      className={`widget-wrapper widget-wrapper--${config.widgetAlign}`}
+      style={{
+        "--bg-card":        config.widgetBg,
+        "--text-primary":   config.widgetText,
+        "--text-secondary": config.widgetText,
+        "--input-text":     config.widgetText,
+        "--accent":         config.widgetBtnColor,
+        "--accent-hover":   config.widgetBtnColor,
+      }}
+    >
       <FeedbackWidget
         onSubmitSuccess={setLatestEntry}
         dark={dark}

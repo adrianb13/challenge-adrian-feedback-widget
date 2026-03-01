@@ -27,10 +27,17 @@
       "message": "Not great",
       "rating": 2,
       "submitted_at": "2026-03-01T20:36:41.352984"
+    },
+    {
+      "id": 5,
+      "name": "Dude",
+      "message": "Hello, I'm GREAT!!!",
+      "rating": 5,
+      "submitted_at": "2026-03-01T21:05:53.190186"
     }
   ],
   "stats": {
-    "total_submissions": 4,
-    "rating_sum": 14
+    "total_submissions": 5,
+    "rating_sum": 19
   }
 }
