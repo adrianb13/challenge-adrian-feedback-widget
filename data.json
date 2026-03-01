@@ -1,0 +1,36 @@
+{
+  "feedbacks": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "message": "Loved it\\!",
+      "rating": 5,
+      "submitted_at": "2026-03-01T18:57:40.661589"
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "message": "Pretty good",
+      "rating": 4,
+      "submitted_at": "2026-03-01T18:57:40.665871"
+    },
+    {
+      "id": 3,
+      "name": "Carol",
+      "message": "Okay",
+      "rating": 3,
+      "submitted_at": "2026-03-01T18:57:40.668872"
+    },
+    {
+      "id": 4,
+      "name": "Dan",
+      "message": "Not great",
+      "rating": 2,
+      "submitted_at": "2026-03-01T18:57:40.671914"
+    }
+  ],
+  "stats": {
+    "total_submissions": 4,
+    "rating_sum": 14
+  }
+}
