@@ -11,7 +11,7 @@ const RATINGS = [
 
 const EMPTY_ERRORS = { name: "", message: "", rating: "" };
 
-export default function FeedbackWidget({ onSubmitSuccess }) {
+export default function FeedbackWidget({ onSubmitSuccess, dark, onToggleDark }) {
   const [form, setForm] = useState({ name: "", message: "", rating: 0 });
   const [errors, setErrors] = useState(EMPTY_ERRORS);
   const [touched, setTouched] = useState({ name: false, message: false, rating: false });
@@ -85,7 +85,12 @@ export default function FeedbackWidget({ onSubmitSuccess }) {
 
   return (
     <div className="widget">
-      <h2 className="widget-title">Share Your Feedback</h2>
+      <div className="widget-header">
+        <h2 className="widget-title">Share Your Feedback</h2>
+        <button className="dark-toggle" onClick={onToggleDark} aria-label="Toggle dark mode">
+          {dark ? "☀️" : "🌙"}
+        </button>
+      </div>
 
       {status === "success" && (
         <div className="alert alert-success">

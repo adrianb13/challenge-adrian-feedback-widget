@@ -4,13 +4,69 @@
   padding: 0;
 }
 
+:root {
+  --bg-page:           #f0f2f5;
+  --bg-card:           #ffffff;
+  --text-primary:      #1a1a2e;
+  --text-secondary:    #374151;
+  --text-muted:        #6b7280;
+  --text-faint:        #9ca3af;
+  --border:            #d1d5db;
+  --border-card:       #e5e7eb;
+  --input-text:        #111827;
+  --accent:            #6366f1;
+  --accent-hover:      #4f46e5;
+  --accent-disabled:   #a5b4fc;
+  --accent-ring:       rgba(99, 102, 241, 0.1);
+  --error:             #ef4444;
+  --error-bg:          #fef2f2;
+  --error-border:      #fca5a5;
+  --error-text:        #991b1b;
+  --error-ring:        rgba(239, 68, 68, 0.1);
+  --success-bg:        #ecfdf5;
+  --success-border:    #6ee7b7;
+  --success-text:      #065f46;
+  --shadow:            0 4px 24px rgba(0, 0, 0, 0.08);
+  --toggle-bg:         #e5e7eb;
+  --toggle-icon:       #374151;
+}
+
+body.dark {
+  --bg-page:           #0f1117;
+  --bg-card:           #1e2130;
+  --text-primary:      #f3f4f6;
+  --text-secondary:    #d1d5db;
+  --text-muted:        #9ca3af;
+  --text-faint:        #6b7280;
+  --border:            #374151;
+  --border-card:       #2d3748;
+  --input-text:        #f3f4f6;
+  --accent:            #818cf8;
+  --accent-hover:      #6366f1;
+  --accent-disabled:   #3730a3;
+  --accent-ring:       rgba(129, 140, 248, 0.2);
+  --error:             #f87171;
+  --error-bg:          #2d1b1b;
+  --error-border:      #7f1d1d;
+  --error-text:        #fca5a5;
+  --error-ring:        rgba(248, 113, 113, 0.2);
+  --success-bg:        #0d2e22;
+  --success-border:    #065f46;
+  --success-text:      #6ee7b7;
+  --shadow:            0 4px 24px rgba(0, 0, 0, 0.4);
+  --toggle-bg:         #374151;
+  --toggle-icon:       #f3f4f6;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #f0f2f5;
+  background: var(--bg-page);
+  color: var(--text-secondary);
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.2s, color 0.2s;
 }
 
 .app {
@@ -21,3 +77,4 @@ body {
   padding: 2rem 1rem;
   gap: 1.25rem;
 }
+
