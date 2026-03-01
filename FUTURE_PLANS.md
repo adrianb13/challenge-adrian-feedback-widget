@@ -22,6 +22,10 @@ Depending on how we want to allow the user to request the CSV, it could be imple
 
 Use AI to analyze the comments provided and see what can be inferred from customers.  Example is to examine what can be improved, what is and isn't working, and other specific details a customer might provide for both good and bad feedback.
 
+### Attach Customize Widget Settings To User
+
+The Widget Customization is currently tied to the user who made the changes. I would like to connect those to the user and maybe even keep a list of saved options they have previously created so they can automatically toggle between prior settings.
+
 ### Authentication & User Accounts
 
 The current sign-in flow is username + email matching only — no passwords, sessions, or tokens. A proper auth layer is the most important next feature before any real-world use.
