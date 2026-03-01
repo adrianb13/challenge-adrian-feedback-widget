@@ -33,7 +33,7 @@ class Feedback(BaseModel):
 
 
 def sentiment_label(avg: float) -> str:
-    if avg = 5.0:
+    if avg == 5.0:
         return "perfect"
     elif avg >= 4.5:
         return "very positive"
