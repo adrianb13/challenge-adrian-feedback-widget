@@ -1,84 +1,84 @@
+import importlib.util
 import json
 import os
-from fastapi import FastAPI
-from pydantic import BaseModel
-from datetime import datetime
+import uvicorn
+from fastapi.testclient import TestClient
 
-app = FastAPI()
-
-DATA_FILE = "data.json"
-
-
-def load_data():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r") as f:
-            return json.load(f)
-    return {"feedbacks": [], "stats": {"total_submissions": 0, "rating_sum": 0}}
+spec = importlib.util.spec_from_file_location("feedback_api", "api/feedback-api.py")
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
 
 
-def save_data(data: dict):
-    with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=2)
+def run_tests():
+    # reset data.json for a clean test run
+    if os.path.exists("data.json"):
+        os.remove("data.json")
+    module.feedbacks.clear()
+    module.stats.update({"total_submissions": 0, "rating_sum": 0})
+
+    client = TestClient(module.app)
+    passed = 0
+    failed = 0
+
+    def check(label, condition, detail=""):
+        nonlocal passed, failed
+        if condition:
+            print(f"  [PASS] {label}")
+            passed += 1
+        else:
+            print(f"  [FAIL] {label}" + (f" — {detail}" if detail else ""))
+            failed += 1
+
+    # ── POST /feedback ──────────────────────────────────────────────
+    print("\n POST /feedback")
+    samples = [
+        ("Alice", "Absolutely loved it!", 5),
+        ("Bob",   "Pretty good overall", 4),
+        ("Carol", "It was just okay",    3),
+        ("Dan",   "Not great",           2),
+    ]
+    for name, msg, rating in samples:
+        r = client.post("/feedback", json={"name": name, "message": msg, "rating": rating})
+        check(f"status 200 for {name}",            r.status_code == 200)
+        check(f"returns feedback entry for {name}", "feedback" in r.json())
+        check(f"correct name for {name}",           r.json()["feedback"]["name"] == name)
+        check(f"correct rating for {name}",         r.json()["feedback"]["rating"] == rating)
+
+    # ── GET /feedback ───────────────────────────────────────────────
+    print("\n GET /feedback")
+    r = client.get("/feedback")
+    body = r.json()
+    check("status 200",                          r.status_code == 200)
+    check("returns 'feedbacks' key",             "feedbacks" in body)
+    check("returns at most 3 entries",           len(body["feedbacks"]) <= 3)
+    check("most recent entry is first (Dan)",    body["feedbacks"][0]["name"] == "Dan")
+    check("second entry is Carol",               body["feedbacks"][1]["name"] == "Carol")
+    check("third entry is Bob",                  body["feedbacks"][2]["name"] == "Bob")
+
+    # ── POST /stats ─────────────────────────────────────────────────
+    print("\n POST /stats")
+    r = client.post("/stats")
+    body = r.json()
+    check("status 200",                          r.status_code == 200)
+    check("total_submissions == 4",              body["total_submissions"] == 4)
+    check("average_sentiment == 3.5",            body["average_sentiment"] == 3.5)
+    check("sentiment_label == 'positive'",       body["sentiment_label"] == "positive")
+
+    # ── data.json persistence ────────────────────────────────────────
+    print("\n data.json persistence")
+    check("data.json exists",                    os.path.exists("data.json"))
+    with open("data.json") as f:
+        data = json.load(f)
+    check("all 4 feedbacks stored",             len(data["feedbacks"]) == 4)
+    check("stats total_submissions correct",     data["stats"]["total_submissions"] == 4)
+    check("stats rating_sum correct",            data["stats"]["rating_sum"] == 14)
+
+    # ── summary ──────────────────────────────────────────────────────
+    total = passed + failed
+    print(f"\n Results: {passed}/{total} passed" + (" -- OK" if failed == 0 else f" -- {failed} FAILED"))
 
 
-data = load_data()
-feedbacks = data["feedbacks"]
-stats = data["stats"]
-
-
-class Feedback(BaseModel):
-    name: str
-    message: str
-    rating: int
-
-
-def sentiment_label(avg: float) -> str:
-    if avg == 5.0:
-        return "perfect"
-    elif avg >= 4.5:
-        return "very positive"
-    elif avg >= 3.5:
-        return "positive"
-    elif avg >= 2.5:
-        return "neutral"
-    elif avg >= 1.5:
-        return "negative"
-    return "very negative"
-
-
-@app.get("/feedback")
-def get_feedback():
-    stored = load_data()
-    recent = stored["feedbacks"][-3:][::-1]
-    return {"feedbacks": recent}
-
-
-@app.post("/feedback")
-def post_feedback(feedback: Feedback):
-    entry = {
-        "id": len(feedbacks) + 1,
-        "name": feedback.name,
-        "message": feedback.message,
-        "rating": feedback.rating,
-        "submitted_at": datetime.utcnow().isoformat(),
-    }
-    feedbacks.append(entry)
-    stats["total_submissions"] += 1
-    stats["rating_sum"] += feedback.rating
-    save_data({"feedbacks": feedbacks, "stats": stats})
-    return {"message": "Feedback submitted successfully", "feedback": entry}
-
-
-@app.post("/stats")
-def get_stats():
-    total = stats["total_submissions"]
-    if total == 0:
-        return {"total_submissions": 0, "average_sentiment": None, "sentiment_label": "no data"}
-    avg = stats["rating_sum"] / total
-    result = {
-        "total_submissions": total,
-        "average_sentiment": round(avg, 2),
-        "sentiment_label": sentiment_label(avg),
-    }
-    save_data({"feedbacks": feedbacks, "stats": stats})
-    return result
+if __name__ == "__main__":
+    run_tests()
+    print("\n Starting server...")
+    uvicorn.run(module.app, host="0.0.0.0", port=8000)
